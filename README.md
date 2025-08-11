@@ -20,63 +20,64 @@ O backend é responsável por garantir a segurança, integridade e rastreabilida
 
 ## 📊 Diagrama do projeto
 
-```plantuml
-@startuml
-enum TipoOperacao {
-  DEPOSITO
-  SAQUE
-  TRANSFERENCIA
-  INVESTIMENTO
-  CAMBIO
-}
+```mermaid
+classDiagram
+    %% Enum não tem suporte direto, então representamos como classe simples
+    class TipoOperacao {
+        <<enum>>
+        +DEPOSITO
+        +SAQUE
+        +TRANSFERENCIA
+        +INVESTIMENTO
+        +CAMBIO
+    }
 
-class Pessoa {
-  +id : String
-  +nomeCompleto : String
-  +dataNascimento : Date
-  +cpf : String
-  +email : String
-  +telefone : String
-  +endereco : String
-  +username : String
-  +senha : String
-}
+    class Pessoa {
+        +id : String
+        +nomeCompleto : String
+        +dataNascimento : Date
+        +cpf : String
+        +email : String
+        +telefone : String
+        +endereco : String
+        +username : String
+        +senha : String
+    }
 
-class Conta {
-  +id : String
-  +agencia : String
-  +numeroConta : String
-  +saldo : Decimal
-}
+    class Conta {
+        +id : String
+        +agencia : String
+        +numeroConta : String
+        +saldo : Decimal
+    }
 
-class Cartao {
-  +id : String
-  +numeroCartao : String
-  +nomeNoCartao : String
-  +codigoSeguranca : String
-  +validade : Date
-}
+    class Cartao {
+        +id : String
+        +numeroCartao : String
+        +nomeNoCartao : String
+        +codigoSeguranca : String
+        +validade : Date
+    }
 
-class Operacao {
-  +id : String
-  +tipo : TipoOperacao
-  +descricao : String
-  +data : Date
-  +valor : Decimal
-}
+    class Operacao {
+        +id : String
+        +tipo : TipoOperacao
+        +descricao : String
+        +data : Date
+        +valor : Decimal
+    }
 
-class Investimento {
-  +id : String
-  +nomeAplicacao : String
-  +valor : Decimal
-  +data : Date
-}
+    class Investimento {
+        +id : String
+        +nomeAplicacao : String
+        +valor : Decimal
+        +data : Date
+    }
 
-Pessoa "1" -- "1..*" Conta : possui >
-Conta "1" -- "1..*" Cartao : possui >
-Conta "1" -- "0..*" Operacao : realiza >
-Conta "1" -- "0..*" Investimento : possui >
-Operacao "0..1" -- "0..1" Conta : contaOrigem >
-Operacao "0..1" -- "0..1" Conta : contaDestino >
-
-@enduml
+    %% Relacionamentos
+    Pessoa "1" --> "1..*" Conta : possui
+    Conta "1" --> "1..*" Cartao : possui
+    Conta "1" --> "0..*" Operacao : realiza
+    Conta "1" --> "0..*" Investimento : possui
+    Operacao "0..1" --> "0..1" Conta : contaOrigem
+    Operacao "0..1" --> "0..1" Conta : contaDestino
