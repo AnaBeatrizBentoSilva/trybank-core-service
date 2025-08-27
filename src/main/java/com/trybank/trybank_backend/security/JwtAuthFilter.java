@@ -1,9 +1,7 @@
 package com.trybank.trybank_backend.security;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +11,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.trybank.trybank_backend.service.CustomUserDetailsService;
 
-import java.io.IOException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter{
@@ -44,7 +45,8 @@ public class JwtAuthFilter extends OncePerRequestFilter{
             jwt = authHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                System.out.println("Token inválido: " + e.getMessage());
             }
         }
 
