@@ -23,19 +23,19 @@ public class PersonService {
 
     public List<PersonResponse> getAllPeople() {
         return personRepository.findAll()
-            .stream()
-            .map(PersonResponse::fromEntity)
-            .toList();
+                .stream()
+                .map(PersonResponse::fromEntity)
+                .toList();
     }
 
     public PersonResponse getPersonById(String id) {
         return personRepository.findById(id)
-            .map(PersonResponse::fromEntity)
-            .orElseThrow(() -> new NotFoundException("Person not found with id: " + id));
+                .map(PersonResponse::fromEntity)
+                .orElseThrow(() -> new NotFoundException("Person not found with id: " + id));
     }
 
     @Transactional
-    public PersonResponse createPerson(PersonCreateRequest request){
+    public PersonResponse createPerson(PersonCreateRequest request) {
         if (personRepository.existsByCpf(request.getCpf())) {
             throw new BusinessException("CPF already in use");
         }
@@ -63,15 +63,8 @@ public class PersonService {
     @Transactional
     public PersonResponse updatePerson(String id, PersonUpdateRequest request) {
         Person person = personRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Person not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Person not found with id: " + id));
 
-        if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(person.getEmail())) {
-            if (personRepository.existsByEmail(request.getEmail())) {
-                throw new BusinessException("Email already in use");
-            }
-            person.setEmail(request.getEmail());
-        }
-       
         if (request.getUsername() != null && !request.getUsername().equalsIgnoreCase(person.getUsername())) {
             if (personRepository.existsByUsername(request.getUsername())) {
                 throw new BusinessException("Username already in use");
@@ -79,19 +72,18 @@ public class PersonService {
             person.setUsername(request.getUsername());
         }
         
-        if(request.getFullName() != null) {
-            person.setFullName(request.getFullName());
+        if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(person.getEmail())) {
+            if (personRepository.existsByEmail(request.getEmail())) {
+                throw new BusinessException("Email already in use");
+            }
+            person.setEmail(request.getEmail());
         }
 
-        if(request.getDateOfBirth() != null) {
-            person.setDateOfBirth(request.getDateOfBirth());
-        }
-
-        if(request.getPhoneNumber() != null) {
+        if (request.getPhoneNumber() != null) {
             person.setPhoneNumber(request.getPhoneNumber());
         }
 
-        if(request.getAddress() != null) {
+        if (request.getAddress() != null) {
             person.setAddress(request.getAddress());
         }
 
