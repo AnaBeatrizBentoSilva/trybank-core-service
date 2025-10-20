@@ -18,5 +18,7 @@ public class OperationRequest {
     private String description;
     private BigDecimal value;
     private String accountSourceId;
-    private String accountDestinationId;
+
+    private String beneficiaryAgency;
+    private String beneficiaryAccountNumber;
 }

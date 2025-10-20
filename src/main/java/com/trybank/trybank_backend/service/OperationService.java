@@ -1,6 +1,8 @@
 package com.trybank.trybank_backend.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +33,19 @@ public class OperationService {
 
         Account accountDestination = null;
         if (operationRequest.getTypeOperation() == TypeOperation.TRANSFERENCIA) {
-            accountDestination = accountRepository.findById(operationRequest.getAccountDestinationId())
-                    .orElseThrow(() -> new BusinessException("Conta de destino não encontrada"));
+            accountDestination = accountRepository.findByAgencyAndAccountNumber(
+                operationRequest.getBeneficiaryAgency(),
+                operationRequest.getBeneficiaryAccountNumber())
+                .orElseThrow(() -> new BusinessException("Conta de destino não encontrada"));
+        }
+
+        int currentHour = LocalDateTime.now().getHour();
+        BigDecimal amount = operationRequest.getValue();
+        BigDecimal maxLimit = (currentHour >= 22 || currentHour < 6) ? new BigDecimal(1000)
+                : new BigDecimal(10000);
+
+        if (amount.compareTo(maxLimit) > 0) {
+            throw new BusinessException("Valor excede o limite permitido para esse horário.");
         }
 
         // Atualiza saldo das contas
@@ -41,17 +54,23 @@ public class OperationService {
                 accountSource.setBalance(accountSource.getBalance().add(operationRequest.getValue()));
                 break;
             case SAQUE:
-                if (accountSource.getBalance().compareTo(operationRequest.getValue()) < 0) {
+                if (amount.compareTo(new BigDecimal("10")) < 0){
+                    throw new BusinessException("O valor mínimo para saque é R$10,00");
+                }
+                if (amount.remainder(new BigDecimal("10")).compareTo(BigDecimal.ZERO) != 0) {
+                    throw new BusinessException("O valor do saque deve ser múltiplo de 10.");
+                }
+                if (accountSource.getBalance().compareTo(amount) < 0) {
                     throw new BusinessException("Saldo insuficiente");
                 }
-                accountSource.setBalance(accountSource.getBalance().subtract(operationRequest.getValue()));
+                accountSource.setBalance(accountSource.getBalance().subtract(amount));
                 break;
             case TRANSFERENCIA:
-                if (accountSource.getBalance().compareTo(operationRequest.getValue()) < 0) {
+                if (accountSource.getBalance().compareTo(amount) < 0) {
                     throw new BusinessException("Saldo insuficiente");
                 }
-                accountSource.setBalance(accountSource.getBalance().subtract(operationRequest.getValue()));
-                accountDestination.setBalance(accountDestination.getBalance().add(operationRequest.getValue()));
+                accountSource.setBalance(accountSource.getBalance().subtract(amount));
+                accountDestination.setBalance(accountDestination.getBalance().add(amount));
                 accountRepository.save(accountDestination);
                 break;
             case INVESTIMENTO:

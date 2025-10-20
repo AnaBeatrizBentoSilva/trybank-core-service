@@ -52,6 +52,7 @@ public class UserController {
         userInfoDTO.setPhoneNumber(person.getPhoneNumber());
         userInfoDTO.setCpf(person.getCpf());
         userInfoDTO.setAddress(person.getAddress());
+        userInfoDTO.setAccountId(account.getId());
         userInfoDTO.setAgency(account.getAgency());
         userInfoDTO.setAccountNumber(account.getAccountNumber());
         userInfoDTO.setBalance(account.getBalance());
