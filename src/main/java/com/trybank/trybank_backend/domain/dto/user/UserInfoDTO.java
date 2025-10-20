@@ -15,6 +15,7 @@ public class UserInfoDTO {
     private String cpf;
     private String address;
 
+    private String accountId;
     private String agency;
     private String accountNumber;
     private BigDecimal balance;
